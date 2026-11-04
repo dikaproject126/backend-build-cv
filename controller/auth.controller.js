@@ -105,13 +105,37 @@ export const RegisterUser = async (req, res) => {
 }
 
 export const LogoutUser = (req, res) => {
-    res.json({
-        message: 'Ini adalah Fungsi Logout'
-    })
+    try {
+        res.cookie('jwt', '', {
+            httpOnly: true,
+            expires: new Date(0)
+        })
+
+        res.status(200).json({
+            message: 'Logout Success'
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
 }
 
 export const CurentUser = (req, res) => {
-    res.json({
-        message: 'Ini adalah Fungsi Me'
-    })
+    try {
+        res.status(200).json({
+            message: 'Get Request User Success',
+            user: {
+                id: req.user.id,
+                name: req.user.name,
+                email: req.user.email
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: 'error.message'
+        })
+    }
+
 }
