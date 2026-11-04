@@ -2,6 +2,7 @@ import express from 'express';
 import AuthRouter from './routes/auth.router.js';
 import 'dotenv/config'
 import ConnectDB from './configs/db.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const port = process.env.PORT;
@@ -9,6 +10,8 @@ const port = process.env.PORT;
 await ConnectDB();
 
 app.use(express.json()) // Kalau response harus panggil deklarasi dengan express.json() 
+app.use(cookieParser())
+
 
 // Routing atau rutenya
 // Method GET : Pengambilan Data

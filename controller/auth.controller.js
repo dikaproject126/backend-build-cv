@@ -1,35 +1,107 @@
 import User from '../models/user.js'
+import jwt from 'jsonwebtoken'
+import bycrypt from 'bcrypt'
 
-export const LoginUser = (req, res) => {
-    res.json({
-        message: 'Ini adalah Fungsi Login'
+const generateToken = (res, userId) => {
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+        expiresIn: '7d'
+    })
+
+    res.cookie('jwt', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000
     })
 }
 
-export const RegisterUser = async(req, res) => {
+export const LoginUser = async (req, res) => {
     try {
-        const {name, email,password} = req.body
-        
-        const newUser = await User.create({
-            name,
-            email,
-            password
-        })
+        const { email, password } = req.body
 
-        res.status(201).json({
-            message: 'Register Berhasil',
-            user: newUser
-        })
-        
-    } catch (err) {
-        if(err.name == "ValidationError"){
+        if (!email || !password) {
             return res.status(400).json({
-                error: err.message
+                message: 'Email and Password Required'
             })
         }
 
+        // check user yang diinput sudah terdaftar atau tidak
+        const currentUser = await User.findOne({ email: email })
+
+        if (!currentUser) {
+            return res.status(400).json({
+                message: 'Invalid Email or Password'
+            })
+        }
+
+        const ComparePassword = bycrypt.compareSync(password, currentUser.password)
+
+        if (!ComparePassword) {
+            return res.status(400).json({
+                message: 'Password Invalid'
+            })
+        }
+
+        generateToken(res, currentUser._id)
+
+        res.status(201).json({
+            message: 'Login Berhasil',
+            user: {
+                id: currentUser._id,
+                name: currentUser.name,
+                email: currentUser.email,
+            }
+        })
+    } catch (error) {
+        return res.status(400).json({
+            message: err.message
+        })
     }
-    
+
+}
+
+export const RegisterUser = async (req, res) => {
+    try {
+        const { name, email, password } = req.body
+
+        const userEmail = await User.findOne({ email: email })
+
+        if (userEmail) {
+            return res.status(400).json({
+                message: 'Email is already Existing'
+            })
+        }
+
+        const hashPassword = await bycrypt.hash(password, 10)
+
+        const newUser = await User.create({
+            name,
+            email,
+            password: hashPassword
+        })
+
+        generateToken(res, newUser._id)
+
+        res.status(201).json({
+            message: 'Register Berhasil',
+            user: {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+            }
+        })
+
+    } catch (err) {
+        if (err.name == "ValidationError") {
+            return res.status(400).json({
+                message: err.message
+            })
+        }
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+
 }
 
 export const LogoutUser = (req, res) => {
