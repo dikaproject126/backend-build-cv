@@ -3,6 +3,7 @@ import AuthRouter from './routes/auth.router.js';
 import 'dotenv/config'
 import ConnectDB from './configs/db.js';
 import cookieParser from 'cookie-parser';
+import ResumeRouter from './routes/resume.router.js';
 
 const app = express();
 const port = process.env.PORT;
@@ -47,6 +48,7 @@ app.use(cookieParser())
 // Parent Route
 
 app.use('/api/auth', AuthRouter)
+app.use('/api/resume', ResumeRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
