@@ -13,6 +13,17 @@ const port = process.env.PORT;
 
 await ConnectDB();
 
+app.use((req, res, next) => {
+  Object.defineProperty(req, 'query', {
+    value:{...req.query},
+    writable: true,
+    configurable: true,
+    enumerable: true,
+  });
+  next();
+});
+
+
 app.use(express.json()) // Kalau response harus panggil deklarasi dengan express.json() 
 app.use(cookieParser())
 
