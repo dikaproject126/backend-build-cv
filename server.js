@@ -4,6 +4,9 @@ import 'dotenv/config'
 import ConnectDB from './configs/db.js';
 import cookieParser from 'cookie-parser';
 import ResumeRouter from './routes/resume.router.js';
+import cors from 'cors';
+import helmet from 'helmet';
+import ExpressMongoSanitize  from 'express-mongo-sanitize';
 
 const app = express();
 const port = process.env.PORT;
@@ -49,6 +52,10 @@ app.use(cookieParser())
 
 app.use('/api/auth', AuthRouter)
 app.use('/api/resume', ResumeRouter)
+
+app.use(cors())
+app.use(helmet())
+app.use(ExpressMongoSanitize())
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
