@@ -19,9 +19,21 @@ export const LoginUser = async (req, res) => {
     try {
         const { email, password } = req.body
 
-        if (!email || !password) {
+        if (!email && !password) {
             return res.status(400).json({
                 message: 'Email and Password Required'
+            })
+        }
+
+        if (!email) {
+            return res.status(400).json({
+                message: 'Email Required'
+            })
+        }
+
+        if (!password) {
+            return res.status(400).json({
+                message: 'Password Required'
             })
         }
 
@@ -54,7 +66,7 @@ export const LoginUser = async (req, res) => {
         })
     } catch (error) {
         return res.status(400).json({
-            message: err.message
+            message: error.message
         })
     }
 
@@ -91,14 +103,14 @@ export const RegisterUser = async (req, res) => {
             }
         })
 
-    } catch (err) {
-        if (err.name == "ValidationError") {
+    } catch (error) {
+        if (error.name == "ValidationError") {
             return res.status(400).json({
-                message: err.message
+                message: error.message
             })
         }
         return res.status(500).json({
-            message: err.message
+            message: error.message
         })
     }
 
