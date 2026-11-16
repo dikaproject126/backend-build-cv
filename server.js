@@ -24,10 +24,6 @@ app.use((req, res, next) => {
 });
 
 
-app.use(express.json()) // Kalau response harus panggil deklarasi dengan express.json() 
-app.use(cookieParser())
-
-
 // Routing atau rutenya
 // Method GET : Pengambilan Data
 // Method PUT : Update Data
@@ -61,12 +57,17 @@ app.use(cookieParser())
 
 // Parent Route
 
-app.use('/api/auth', AuthRouter)
-app.use('/api/resume', ResumeRouter)
-
-app.use(cors())
+app.use(cors({
+  origin: true,
+  credentials: true
+}))
 app.use(helmet())
 app.use(ExpressMongoSanitize())
+app.use(express.json()) // Kalau response harus panggil deklarasi dengan express.json() 
+app.use(cookieParser())
+
+app.use('/api/auth', AuthRouter)
+app.use('/api/resume', ResumeRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
