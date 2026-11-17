@@ -30,6 +30,7 @@ export const LoginUser = async (req, res) => {
                 message: 'Email Required'
             })
         }
+        
 
         if (!password) {
             return res.status(400).json({
