@@ -93,8 +93,6 @@ export const RegisterUser = async (req, res) => {
             password: hashPassword
         })
 
-        generateToken(res, newUser._id)
-
         res.status(201).json({
             message: 'Register Berhasil',
             user: {
