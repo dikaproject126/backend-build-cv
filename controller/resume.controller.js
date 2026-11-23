@@ -49,9 +49,9 @@ export const ReadAllResume = async (req, res) => {
 
 export const DeleteResumebyId = async (req, res) => {
     try {
-        const currentUser = req.user.id
+        const currentUserId = req.user.id
         const { resumeId } = req.params
-        const checkResume = await Resume.findById(resumeId)
+        const checkResume = await Resume.findOne({ _id: resumeId, userId: currentUserId })
 
         if(!checkResume) {
             return res.status(404).json({
@@ -63,7 +63,7 @@ export const DeleteResumebyId = async (req, res) => {
             await imageKitStorage.files.delete(checkResume.personalInfo.imageId)
         }
 
-        await Resume.findOneAndDelete({ _id: resumeId, userId: currentUser._id });
+        await Resume.findOneAndDelete({ _id: resumeId, userId: currentUserId });
 
         return res.status(200).json({
             message: 'Delete Resume Successfully'
