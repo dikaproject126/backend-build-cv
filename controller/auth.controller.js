@@ -117,9 +117,10 @@ export const RegisterUser = async (req, res) => {
 
 export const LogoutUser = (req, res) => {
     try {
-        res.cookie('jwt', '', {
+        res.clearCookie('jwt', {
             httpOnly: true,
-            expires: new Date(0)
+            secure: process.env.NODE_ENV !== 'development',
+            sameSite: 'strict'
         })
 
         res.status(200).json({
